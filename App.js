@@ -1,7 +1,8 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState, useEffect, useRef} from 'react';
-import { StyleSheet, Text, View, TextInput, Button, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, TextInput } from 'react-native';
 import * as SQLite from 'expo-sqlite';
+import { Header, Input, Button, Icon, ListItem, ThemeProvider } from 'react-native-elements';
 
 const db = SQLite.openDatabase('shoppinglistdb.db');
 
@@ -34,7 +35,7 @@ export default function App() {
     });
     initialFocus.current.focus();
     initialFocus.current.clear();
-    clear.current.clear();
+   clear.current.clear();
   }
 
   const deleteItem = (id) => {
@@ -57,52 +58,59 @@ export default function App() {
       />
     );
   };
+  const renderItem = ({ item }) => (
+    <ListItem bottomDivider >
+      <ListItem.Content >
+        <ListItem.Title onLongPress={() => deleteItem(item.id)} style={{fontSize:20, fontWeight:'bold'}}>{item.product}</ListItem.Title>
+        <ListItem.Subtitle style={{fontSize:17}}>{item.amount}</ListItem.Subtitle>
+      </ListItem.Content>
+      <Icon size={30} color="red" type='material' name='delete' onPress={() => deleteItem(item.id)} /> 
+    </ListItem>
+  )
 
   return (
+    <ThemeProvider>
+      <Header
+      centerComponent={{text: 'SHOPPING LIST', style: {color: '#fff'} }} />
     <View style={styles.container}>
-      <TextInput
-      ref={initialFocus}
-      placeholder='Product'
-      onChangeText={(product) => setProduct(product)}
-      value={product}
-      style={{
-       marginTop:30,
-       fontSize: 18,
-       width: 200,
-       borderColor:'gray',
-       borderWidth: 1}} />
-       <TextInput
-       ref={clear}
-       placeholder='Amount'
-       style={{
-        marginTop: 5,
-        marginBottom: 5, fontSize:18,
-        width: 200,
-        borderColor:'gray',
-        borderWidth:1}}
-        onChangeText={(amount) => setAmount(amount)}
-        value={amount}
-       />
-      <View style={{flexDirection:'row'}}>
-      <Button title="Add" onPress={saveItem}></Button>
+      <View style={{ margin: 20, height:30, width:'80%'}}>
+        <Input
+        ref={initialFocus}
+        placeholder='Product'
+        label='Product'
+        onChangeText={(product) => setProduct(product)}
+        value={product}
+        />
       </View>
-      <Text style={{marginTop: 30, fontSize:20, fontWeight: 'bold', color: 'blue'}}>Items to buy</Text>
-      <FlatList 
-      style={{marginLeft: '5%'}}
-      keyExtractor={item => item.id.toString()}
-      data={shoppinglist}
-      ItemSeparatorComponent={listSeparator}
-      renderItem={({item}) => <View style={styles.listContainer}><Text style={{fontSize: 20}}>{item.product}, {item.amount}</Text>
-      <Text style={{fontSize: 18, color: '#0000ff'}} onPress={() => deleteItem(item.id)}> Bought</Text></View>}
-      />
+      <View style={{margin: 20, height:30, width:'80%'}}>
+          <Input
+             ref={clear}
+             placeholder='Amount'
+             label='Amount'
+             onChangeText={(amount) => setAmount(amount)}
+             value={amount}
+          />
+       </View>
+       <View style={{ marginVertical: 20, height:40}}>
+        <Button raised icon={{type:'material', name: 'add', color: 'white', size: 30,}} onPress={saveItem} />
+       </View>
+       
+        <FlatList 
+          style={{margin: '5%', width:'80%'}}
+          keyExtractor={item => item.id.toString()}
+          data={shoppinglist}
+          ItemSeparatorComponent={listSeparator}
+          renderItem = {renderItem}
+         />
       <StatusBar style="auto" />
-    </View>
+       </View>
+       </ThemeProvider>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 100,
+    marginTop: 20,
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
