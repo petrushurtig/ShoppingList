@@ -59,9 +59,9 @@ export default function App() {
     );
   };
   const renderItem = ({ item }) => (
-    <ListItem bottomDivider >
+    <ListItem bottomDivider onLongPress={() => deleteItem(item.id)} >
       <ListItem.Content >
-        <ListItem.Title onLongPress={() => deleteItem(item.id)} style={{fontSize:20, fontWeight:'bold'}}>{item.product}</ListItem.Title>
+        <ListItem.Title  style={{fontSize:20, fontWeight:'bold'}}>{item.product}</ListItem.Title>
         <ListItem.Subtitle style={{fontSize:17}}>{item.amount}</ListItem.Subtitle>
       </ListItem.Content>
       <Icon size={30} color="red" type='material' name='delete' onPress={() => deleteItem(item.id)} /> 
