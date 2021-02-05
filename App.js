@@ -3,6 +3,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import { StyleSheet, Text, View, FlatList, TextInput } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { Header, Input, Button, Icon, ListItem, ThemeProvider } from 'react-native-elements';
+import { Alert } from 'react-native';
 
 const db = SQLite.openDatabase('shoppinglistdb.db');
 
@@ -12,7 +13,7 @@ export default function App() {
   const [shoppinglist, setShoppinglist] = useState([]);
 
   const initialFocus = useRef(null);
-  const clear = useRef(null);
+
 
   useEffect(() => {
     db.transaction(tx => {
@@ -21,21 +22,25 @@ export default function App() {
 }, []);
 
   const saveItem = () => {
+    if (product === "") {
+      Alert.alert("Product is empty")
+    }
+    else{
     db.transaction(tx => {
       tx.executeSql('insert into shoppinglist (product, amount) values (?, ?);', [product, amount]);
     }, null, updateList
     )
-    
-  }
+    initialFocus.current.focus();
+    setProduct('');
+    setAmount('');
+  }}
   const updateList = () => {
     db.transaction(tx => {
       tx.executeSql('select * from shoppinglist;', [], (_, { rows }) => 
       setShoppinglist(rows._array)
       );
     });
-    initialFocus.current.focus();
-    initialFocus.current.clear();
-   clear.current.clear();
+    
   }
 
   const deleteItem = (id) => {
@@ -84,7 +89,6 @@ export default function App() {
       </View>
       <View style={{margin: 20, height:30, width:'80%'}}>
           <Input
-             ref={clear}
              placeholder='Amount'
              label='Amount'
              onChangeText={(amount) => setAmount(amount)}
